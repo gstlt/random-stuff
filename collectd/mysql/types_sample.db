@@ -1,0 +1,3 @@
+bacula_files		amount:GAUGE:U:U
+bacula_backups		backups:GAUGE:U:U, restores:GAUGE:U:U
+bacula_jobs		amount:GAUGE:U:U

@@ -1,0 +1,10 @@
+# It's file with sql queries to mysql server in format:
+# "database_name","item-collected-by-collecd-demon","sql_query"
+
+# Comments and blank lines are ignored. You can also add comment at the end of line (not in the middle)
+# Do NOT place hash (#) in the middle of line since it'll be threated as beginning of comment.
+# You have been warned.
+
+"bacula","bacula_backups-restores","select (select count(JobId) from `Job` where Type='B') as backups, (select count(JobId) from `Job` where Type='R') as restores"
+"bacula","bacula_files-all","select count(*) from File"
+
