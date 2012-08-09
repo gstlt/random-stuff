@@ -94,6 +94,7 @@ check_sqlplus
 
 case "$cmd" in
 --prints)
+    time_start=$(date +%s.%N)
     result=`sqlplus -s ${3}/${4}@${2} << EOF
 set pagesize 0;
 select  
@@ -111,10 +112,12 @@ where request_exe_date  between trunc(sysdate) and trunc(sysdate)+1
 and REQUEST_EMODE IN('XH','X','XL'))O_T_L
 from dual;
 EOF`
-#echo $result
+    time_end=$(date +%s.%N)
+    elapsed_time=$(echo "$time_end - $time_start" | bc | sed 's/^\./0./')
+
     if [ -n "`echo $result | grep ORA-`" ] ; then
       error=` echo "$result" | grep "ORA-" | head -1`
-      echo "CRITICAL - $error"
+      echo "CRITICAL - $error|Time=${elapsed_time}s;;;;;"
       exit $STATE_CRITICAL
     fi
 
@@ -122,27 +125,26 @@ EOF`
     pr_total=`echo "$result1" | awk '/[0-9\.]+/ {printf "%d",$1}'` 
     pr_broken=`echo "$result1" | awk '/[0-9\.]+/ {printf "%d",$2}'` 
     pr_queue=`echo "$result1" | awk '/[0-9\.]+/ {printf "%d",$3}'` 
-    #ts_pctx=`echo "$result1" | awk '/[0-9\.]+/ {printf "%.2f",$2}'`
-#    echo "All = $pr_total, Broken = $pr_broken, In queue = $pr_queue"
-    
+
     if [ "$pr_broken" -eq ${5} ] ; then
-  	echo "WARNING - Prints with error: $pr_broken, Prints in queue: $pr_queue|Total=$pr_total;;;; Broken=$pr_broken;;;; Queued=$pr_queue;;;;"
+  	echo "WARNING - Prints with error: $pr_broken, Prints in queue: $pr_queue|Total=$pr_total;;;; Broken=$pr_broken;;;; Queued=$pr_queue;;;; Time=${elapsed_time}s;;;;;"
 	exit $STATE_WARNING
     fi
     if [ "$pr_broken" -gt ${5} ] ; then
-  	echo "CRITICAL - Prints with error: $pr_broken, Prints in queue: $pr_queue, Total: $pr_total|Total=$pr_total;;;; Broken=$pr_broken;;;; Queued=$pr_queue;;;;"
+  	echo "CRITICAL - Prints with error: $pr_broken, Prints in queue: $pr_queue, Total: $pr_total|Total=$pr_total;;;; Broken=$pr_broken;;;; Queued=$pr_queue;;;; Time=${elapsed_time}s;;;;;"
 	exit $STATE_CRITICAL
     fi
     if [ "$pr_queue" -ge ${6} ] ; then
-  	echo "WARNING  - Too many prints in queue. Total: $pr_total, Queue: $pr_queue|Total=$pr_total;;;; Broken=$pr_broken;;;; Queued=$pr_queue;;;;"
+  	echo "WARNING  - Too many prints in queue. Total: $pr_total, Queue: $pr_queue|Total=$pr_total;;;; Broken=$pr_broken;;;; Queued=$pr_queue;;;; Time=${elapsed_time}s;;;;;"
 	exit $STATE_WARNING
     fi
 
-    echo "OK - Total: $pr_total, Errors: $pr_broken, Queued: $pr_queue|Total=$pr_total;;;; Broken=$pr_broken;;;; Queued=$pr_queue;;;;"
+    echo "OK - Total: $pr_total, Errors: $pr_broken, Queued: $pr_queue|Total=$pr_total;;;; Broken=$pr_broken;;;; Queued=$pr_queue;;;; Time=${elapsed_time}s;;;;;"
     exit $STATE_OK
     ;;
 
 --batchjobs)
+    time_start=$(date +%s.%N)
     result=`sqlplus -s ${3}/${4}@${2} << EOF
 set pagesize 0;
 select
@@ -155,10 +157,13 @@ and REQUEST_EMODE='BP') B,
  (select count(request_id) from print_request where request_exe_date  between trunc(sysdate) and trunc(sysdate)+1 and REQUEST_EMODE IN('BH') and request_id not in (select request_id from bat_request where (status is null or status = 'RUN') and bat_queue = to_char(1) and run_date <= sysdate))) O_T_L
  from dual;
 EOF`
-#echo $result
+
+    time_end=$(date +%s.%N)
+    elapsed_time=$(echo "$time_end - $time_start" | bc | sed 's/^\./0./')
+
     if [ -n "`echo $result | grep ORA-`" ] ; then
       error=` echo "$result" | grep "ORA-" | head -1`
-      echo "CRITICAL - $error"
+      echo "CRITICAL - $error|Time=${elapsed_time}s;;;;;"
       exit $STATE_CRITICAL
     fi
 
@@ -170,39 +175,40 @@ EOF`
 #    echo "All = $pr_total, Broken = $pr_broken, In queue = $pr_queue"
     
     if [ "$bat_broken" -eq ${5} ] ; then
-  	echo "WARNING - Batch jobs with error: $bat_broken, Batch jobs in queue: $bat_queue|Total=$bat_total;;;; Broken=$bat_broken;;;; Queued=$bat_queue;;;;"
+  	echo "WARNING - Batch jobs with error: $bat_broken, Batch jobs in queue: $bat_queue|Total=$bat_total;;;; Broken=$bat_broken;;;; Queued=$bat_queue;;;; Time=${elapsed_time}s;;;;;"
 	exit $STATE_WARNING
     fi
     if [ "$bat_broken" -gt ${5} ] ; then
-  	echo "CRITICAL - Batch jobs with error: $bat_broken, Batch jobs in queue: $bat_queue, Total: $bat_total|Total=$bat_total;;;; Broken=$bat_broken;;;; Queued=$bat_queue;;;;"
+  	echo "CRITICAL - Batch jobs with error: $bat_broken, Batch jobs in queue: $bat_queue, Total: $bat_total|Total=$bat_total;;;; Broken=$bat_broken;;;; Queued=$bat_queue;;;; Time=${elapsed_time}s;;;;;"
 	exit $STATE_CRITICAL
     fi
     if [ "$bat_queue" -ge ${6} ] ; then
-  	echo "WARNING  - Too many batch jobs in queue. Total: $bat_total, Queue: $bat_queue|Total=$bat_total;;;; Broken=$bat_broken;;;; Queued=$bat_queue;;;;"
+  	echo "WARNING  - Too many batch jobs in queue. Total: $bat_total, Queue: $bat_queue|Total=$bat_total;;;; Broken=$bat_broken;;;; Queued=$bat_queue;;;; Time=${elapsed_time}s;;;;;"
 	exit $STATE_WARNING
     fi
 
-    echo "OK - Total: $bat_total, Errors: $bat_broken, Queued: $bat_queue|Total=$bat_total;;;; Broken=$bat_broken;;;; Queued=$bat_queue;;;;"
+    echo "OK - Total: $bat_total, Errors: $bat_broken, Queued: $bat_queue|Total=$bat_total;;;; Broken=$bat_broken;;;; Queued=$bat_queue;;;; Time=${elapsed_time}s;;;;;"
     exit $STATE_OK
     ;;
 
 --batches)
+    time_start=$(date +%s.%N)
     result=`sqlplus -s ${3}/${4}@${2} << EOF
 set pagesize 0;
 select name, job from demon_control
 where session_id not in (select audsid from v\\$session);
 EOF`
-
-#echo $result
+    time_end=$(date +%s.%N)
+    elapsed_time=$(echo "$time_end - $time_start" | bc | sed 's/^\./0./')
 
     if [ -n "`echo $result | grep ORA-`" ] ; then
       error=` echo "$result" | grep "ORA-" | head -1`
-      echo "CRITICAL - $error"
+      echo "CRITICAL - $error|Time=${elapsed_time}s;;;;;"
       exit $STATE_CRITICAL
     fi
 
     if [ -n "`echo $result | grep 'no rows selected'`" ] ; then
-	error="OK - All batches up."
+	error="OK - All batches up.|Time=${elapsed_time}s;;;;;"
 	echo $error
 	exit $STATE_OK
     fi
@@ -211,7 +217,7 @@ EOF`
     #echo "Dupa: $result1"
     bacz_down=`echo "$result1"`
 
-    echo "CRITICAL - Following batch(es) is/are DOWN on ${2}: $bacz_down"
+    echo "CRITICAL - Following batch(es) is/are DOWN on ${2}: $bacz_down|Time=${elapsed_time}s;;;;;"
     exit $STATE_CRITICAL
     ;;
 *)
