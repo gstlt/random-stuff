@@ -117,7 +117,7 @@ EOF`
 
     if [ -n "`echo $result | grep ORA-`" ] ; then
       error=` echo "$result" | grep "ORA-" | head -1`
-      echo "CRITICAL - $error|Time=${elapsed_time}s;;;;;"
+      echo "CRITICAL - $error|time=${elapsed_time}s;;;;"
       exit $STATE_CRITICAL
     fi
 
@@ -127,19 +127,19 @@ EOF`
     pr_queue=`echo "$result1" | awk '/[0-9\.]+/ {printf "%d",$3}'` 
 
     if [ "$pr_broken" -eq ${5} ] ; then
-  	echo "WARNING - Prints with error: $pr_broken, Prints in queue: $pr_queue|Total=$pr_total;;;; Broken=$pr_broken;;;; Queued=$pr_queue;;;; Time=${elapsed_time}s;;;;;"
+  	echo "WARNING - Prints with error: $pr_broken, Prints in queue: $pr_queue|Total=$pr_total;;;; Broken=$pr_broken;;;; Queued=$pr_queue;;;; time=${elapsed_time}s;;;;"
 	exit $STATE_WARNING
     fi
     if [ "$pr_broken" -gt ${5} ] ; then
-  	echo "CRITICAL - Prints with error: $pr_broken, Prints in queue: $pr_queue, Total: $pr_total|Total=$pr_total;;;; Broken=$pr_broken;;;; Queued=$pr_queue;;;; Time=${elapsed_time}s;;;;;"
+  	echo "CRITICAL - Prints with error: $pr_broken, Prints in queue: $pr_queue, Total: $pr_total|Total=$pr_total;;;; Broken=$pr_broken;;;; Queued=$pr_queue;;;; time=${elapsed_time}s;;;;"
 	exit $STATE_CRITICAL
     fi
     if [ "$pr_queue" -ge ${6} ] ; then
-  	echo "WARNING  - Too many prints in queue. Total: $pr_total, Queue: $pr_queue|Total=$pr_total;;;; Broken=$pr_broken;;;; Queued=$pr_queue;;;; Time=${elapsed_time}s;;;;;"
+  	echo "WARNING  - Too many prints in queue. Total: $pr_total, Queue: $pr_queue|Total=$pr_total;;;; Broken=$pr_broken;;;; Queued=$pr_queue;;;; time=${elapsed_time}s;;;;"
 	exit $STATE_WARNING
     fi
 
-    echo "OK - Total: $pr_total, Errors: $pr_broken, Queued: $pr_queue|Total=$pr_total;;;; Broken=$pr_broken;;;; Queued=$pr_queue;;;; Time=${elapsed_time}s;;;;;"
+    echo "OK - Total: $pr_total, Errors: $pr_broken, Queued: $pr_queue|Total=$pr_total;;;; Broken=$pr_broken;;;; Queued=$pr_queue;;;; time=${elapsed_time}s;;;;"
     exit $STATE_OK
     ;;
 
@@ -163,7 +163,7 @@ EOF`
 
     if [ -n "`echo $result | grep ORA-`" ] ; then
       error=` echo "$result" | grep "ORA-" | head -1`
-      echo "CRITICAL - $error|Time=${elapsed_time}s;;;;;"
+      echo "CRITICAL - $error|time=${elapsed_time}s;;;;"
       exit $STATE_CRITICAL
     fi
 
@@ -175,19 +175,19 @@ EOF`
 #    echo "All = $pr_total, Broken = $pr_broken, In queue = $pr_queue"
     
     if [ "$bat_broken" -eq ${5} ] ; then
-  	echo "WARNING - Batch jobs with error: $bat_broken, Batch jobs in queue: $bat_queue|Total=$bat_total;;;; Broken=$bat_broken;;;; Queued=$bat_queue;;;; Time=${elapsed_time}s;;;;;"
+  	echo "WARNING - Batch jobs with error: $bat_broken, Batch jobs in queue: $bat_queue|Total=$bat_total;;;; Broken=$bat_broken;;;; Queued=$bat_queue;;;; time=${elapsed_time}s;;;;"
 	exit $STATE_WARNING
     fi
     if [ "$bat_broken" -gt ${5} ] ; then
-  	echo "CRITICAL - Batch jobs with error: $bat_broken, Batch jobs in queue: $bat_queue, Total: $bat_total|Total=$bat_total;;;; Broken=$bat_broken;;;; Queued=$bat_queue;;;; Time=${elapsed_time}s;;;;;"
+  	echo "CRITICAL - Batch jobs with error: $bat_broken, Batch jobs in queue: $bat_queue, Total: $bat_total|Total=$bat_total;;;; Broken=$bat_broken;;;; Queued=$bat_queue;;;; time=${elapsed_time}s;;;;"
 	exit $STATE_CRITICAL
     fi
     if [ "$bat_queue" -ge ${6} ] ; then
-  	echo "WARNING  - Too many batch jobs in queue. Total: $bat_total, Queue: $bat_queue|Total=$bat_total;;;; Broken=$bat_broken;;;; Queued=$bat_queue;;;; Time=${elapsed_time}s;;;;;"
+  	echo "WARNING  - Too many batch jobs in queue. Total: $bat_total, Queue: $bat_queue|Total=$bat_total;;;; Broken=$bat_broken;;;; Queued=$bat_queue;;;; time=${elapsed_time}s;;;;"
 	exit $STATE_WARNING
     fi
 
-    echo "OK - Total: $bat_total, Errors: $bat_broken, Queued: $bat_queue|Total=$bat_total;;;; Broken=$bat_broken;;;; Queued=$bat_queue;;;; Time=${elapsed_time}s;;;;;"
+    echo "OK - Total: $bat_total, Errors: $bat_broken, Queued: $bat_queue|Total=$bat_total;;;; Broken=$bat_broken;;;; Queued=$bat_queue;;;; time=${elapsed_time}s;;;;"
     exit $STATE_OK
     ;;
 
@@ -203,12 +203,12 @@ EOF`
 
     if [ -n "`echo $result | grep ORA-`" ] ; then
       error=` echo "$result" | grep "ORA-" | head -1`
-      echo "CRITICAL - $error|Time=${elapsed_time}s;;;;;"
+      echo "CRITICAL - $error|time=${elapsed_time}s;;;;"
       exit $STATE_CRITICAL
     fi
 
     if [ -n "`echo $result | grep 'no rows selected'`" ] ; then
-	error="OK - All batches up.|Time=${elapsed_time}s;;;;;"
+	error="OK - All batches up.|time=${elapsed_time}s;;;;"
 	echo $error
 	exit $STATE_OK
     fi
@@ -217,7 +217,7 @@ EOF`
     #echo "Dupa: $result1"
     bacz_down=`echo "$result1"`
 
-    echo "CRITICAL - Following batch(es) is/are DOWN on ${2}: $bacz_down|Time=${elapsed_time}s;;;;;"
+    echo "CRITICAL - Following batch(es) is/are DOWN on ${2}: $bacz_down|time=${elapsed_time}s;;;;"
     exit $STATE_CRITICAL
     ;;
 *)
