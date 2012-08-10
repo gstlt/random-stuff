@@ -29,7 +29,7 @@ IF %Stop100S% LSS %Start100S% SET /a Stop100S+=8640000
 SET /a TookTime=%Stop100S%-%Start100S%
 
 :OK
-ECHO OK - (%~nx0) Elapsed: %TookTime:~0,-2%.%TookTime:~-2% seconds
+ECHO OK - (%~nx0) Elapsed: %TookTime:~0,-2%.%TookTime:~-2% seconds|time=%TookTime:~0,-2%.%TookTime:~-2%s;;;;
 exit 0
 
 :cri
