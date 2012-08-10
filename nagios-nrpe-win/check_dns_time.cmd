@@ -10,7 +10,7 @@ SET /a Start100S=%%T*360000+%%U*6000+%%V*100+%%W
 :: First, let's check if domain name have been set as param while executing script
 FOR /F "tokens=3delims=: " %%I IN ('PING -n 1 %1 ^| FIND "Reply from"') DO (
 SET IP=%%I
-FOR /F "tokens=2 delims=:" %%J IN ('NSLOOKUP %%I 127.0.0.1 ^| FIND "Name:"') DO SET DNS=%%J
+FOR /F "tokens=2 delims=:" %%J IN ('NSLOOKUP %%I set-your-dns-server-ip ^| FIND "Name:"') DO SET DNS=%%J
 )
 IF NOT DEFINED IP @ECHO CRITICAL - %1 is invalid or NETWORK error occurred.
 IF NOT DEFINED IP GOTO :cri
@@ -29,9 +29,10 @@ IF %Stop100S% LSS %Start100S% SET /a Stop100S+=8640000
 SET /a TookTime=%Stop100S%-%Start100S%
 
 :OK
-ECHO OK - (%~nx0) Elapsed: %TookTime:~0,-2%.%TookTime:~-2% seconds|time=%TookTime:~0,-2%.%TookTime:~-2%s;;;;
+if %TookTime% LSS 100 (set TookTime=0%TookTime:~0,-2%.%TookTime:~-2%) else (set TookTime=%TookTime:~0,-2%.%TookTime:~-2%)
+
+ECHO OK - (%~nx0) Elapsed: %TookTime% seconds^|time=%TookTime%s;;;;
 exit 0
 
 :cri
-echo CRITICAL
 exit 2

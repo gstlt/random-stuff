@@ -13,7 +13,7 @@ GoTo :EOF
 :RUN
 FOR /F "tokens=3delims=: " %%I IN ('PING -n 1 %1 ^| FIND "Reply from"') DO (
 SET IP=%%I
-FOR /F "tokens=2 delims=:" %%J IN ('NSLOOKUP %%I 127.0.0.1 ^| FIND "Name:"') DO SET DNS=%%J
+FOR /F "tokens=2 delims=:" %%J IN ('NSLOOKUP %%I set-your-dns-server-ip ^| FIND "Name:"') DO SET DNS=%%J
 )
 IF NOT DEFINED IP @ECHO CRITICAL - %1 is invalid or NETWORK error occurred. && GOTO :END
 rem ECHO.
