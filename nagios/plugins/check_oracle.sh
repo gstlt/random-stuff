@@ -76,11 +76,11 @@ case "$cmd" in
     elapsed_time=$(echo "$time_end - $time_start" | bc | sed 's/^\./0./')
     loginchk2=` echo  $loginchk | grep -c ORA-01017`
     if [ ${loginchk2} -eq 1 ] ; then
-	echo "OK - dummy login connected in $elapsed_time s|Time=${elapsed_time}s;;;;;"
+	echo "OK - dummy login connected in $elapsed_time s|time=${elapsed_time}s;;;;"
 	exit $STATE_OK
     else
 	loginchk3=` echo "$loginchk" | grep "ORA-" | head -1`
-	echo "CRITICAL - $loginchk3|Time=${elapsed_time}s;;;;;"
+	echo "CRITICAL - $loginchk3|time=${elapsed_time}s;;;;"
 	exit $STATE_CRITICAL
     fi
     ;;
@@ -92,11 +92,11 @@ case "$cmd" in
     ### printf "Elapsed time: %.3f\n" $(echo "$elapsed_time")
     loginchk2=` echo  $loginchk | grep -c ORA-`
     if [ ${loginchk2} -eq 0 ] ; then
-	echo "OK - Connected to $2 in $elapsed_time s|Time=${elapsed_time}s;;;;;"
+	echo "OK - Connected to $2 in $elapsed_time s|time=${elapsed_time}s;;;;"
 	exit $STATE_OK
     else
 	loginchk3=` echo "$loginchk" | grep "ORA-" | head -1`
-	echo "CRITICAL - $loginchk3|Time=${elapsed_time}s;;;;;"
+	echo "CRITICAL - $loginchk3|time=${elapsed_time}s;;;;"
 	exit $STATE_CRITICAL
     fi
     ;;
@@ -112,12 +112,12 @@ EOF`
 
     if [ -n "`echo $result | grep ORA-`" ] ; then
       error=` echo "$result" | grep "ORA-" | head -1`
-      echo "CRITICAL - $error|Time=${elapsed_time}s;;;;;"
+      echo "CRITICAL - $error|time=${elapsed_time}s;;;;"
       exit $STATE_CRITICAL
     fi
 
     if [ -n "`echo $result | grep 'no rows selected'`" ] ; then
-        error="CRITICAL - No user sessions? Something is wrong!|Time=${elapsed_time}s;;;;;"
+        error="CRITICAL - No user sessions? Something is wrong!|time=${elapsed_time}s;;;;"
         echo $error
         exit $STATE_CRITICAL
     fi
@@ -125,7 +125,7 @@ EOF`
     sid_total=`echo "$result" | awk '/[0-9]+/ {printf "%d",$1}'`
     #echo "Total: $sid_total"
 
-    echo "OK - User sessions on ${2}: $sid_total|'${2} sessions number'=${sid_total};;;; Time=${elapsed_time}s;;;;;"
+    echo "OK - User sessions on ${2}: $sid_total|'${2} sessions number'=${sid_total};;;; time=${elapsed_time}s;;;;"
     exit $STATE_OK
     ;;
 --tablespace)
@@ -206,13 +206,13 @@ EOF`
     elapsed_time=$(echo "$time_end - $time_start" | bc | sed 's/^\./0./')
     if [ -n "`echo $result | grep ORA-`" ] ; then
       error=` echo "$result" | grep "ORA-" | head -1`
-      echo "CRITICAL - $error|Time=${elapsed_time}s;;;;;"
+      echo "CRITICAL - $error|time=${elapsed_time}s;;;;"
       exit $STATE_CRITICAL
     fi
 
     if [ -n "`echo $result | grep 'no rows selected'`" ] ; then
 	error="CRITICAL - Where is ASM? (Wrong diskgroup name?)"
-	echo "$error|Time=${elapsed_time}s;;;;;"
+	echo "$error|time=${elapsed_time}s;;;;"
 	exit $STATE_CRITICAL
     fi
 
@@ -222,15 +222,15 @@ EOF`
     asm_free=`echo "$result1" | awk '/[0-9]+/ {printf "%d",$2}'`
 
     if [ "$asm_free" -lt ${7} ] ; then
-  	echo "CRITICAL - Low disk space on ${5}! $asm_free MB/$asm_total MB|${5}=${asm_free}MB;${6};${7};0;${asm_total} Time=${elapsed_time}s;;;;;"
+  	echo "CRITICAL - Low disk space on ${5}! $asm_free MB/$asm_total MB|${5}=${asm_free}MB;${6};${7};0;${asm_total} time=${elapsed_time}s;;;;"
 	exit $STATE_CRITICAL
     fi
     if [ "$asm_free" -lt ${6} ] ; then
-  	echo "WARNING - Low disk space on ${5}! $asm_free MB/$asm_total MB|${5}=${asm_free}MB;${6};${7};0;${asm_total} Time=${elapsed_time}s;;;;;"
+  	echo "WARNING - Low disk space on ${5}! $asm_free MB/$asm_total MB|${5}=${asm_free}MB;${6};${7};0;${asm_total} time=${elapsed_time}s;;;;"
 	exit $STATE_WARNING
     fi
 
-    echo "OK - Free space on ${5}: $asm_free MB/$asm_total MB|${5}=${asm_free}MB;${6};${7};0;${asm_total} Time=${elapsed_time}s;;;;;"
+    echo "OK - Free space on ${5}: $asm_free MB/$asm_total MB|${5}=${asm_free}MB;${6};${7};0;${asm_total} time=${elapsed_time}s;;;;"
     exit $STATE_OK
     ;;
 --pcm)
@@ -246,7 +246,7 @@ EOF`
 
     if [ -n "`echo $result | grep ORA-`" ] ; then
       error=` echo "$result" | grep "ORA-" | head -1`
-      echo "CRITICAL - $error|Time=${elapsed_time}s;;;;;"
+      echo "CRITICAL - $error|time=${elapsed_time}s;;;;"
       exit $STATE_CRITICAL
     fi
 
@@ -254,10 +254,10 @@ EOF`
     #echo "Total: $events_num"
 
     if [ $events_num -eq "0" ]; then
-        echo "OK - No unhandled events|Events=${events_num};;;;; Time=${elapsed_time}s;;;;;"
+        echo "OK - No unhandled events|Events=${events_num};;;; time=${elapsed_time}s;;;;"
         exit $STATE_OK
     else
-        echo "CRITICAL - Unhandled events: $events_num|Events=${events_num};;;;; Time=${elapsed_time}s;;;;;"
+        echo "CRITICAL - Unhandled events: $events_num|Events=${events_num};;;; time=${elapsed_time}s;;;;"
         exit $STATE_CRITICAL
     fi
     ;;
