@@ -1,7 +1,7 @@
 @ECHO OFF
 SETLOCAL
 :: Store start time
-echo %TIME%
+rem echo %TIME%
 set HH=%TIME:~0,2%
 set MM=%TIME:~3,-6%
 set SS=%TIME:~6,-3%
