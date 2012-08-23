@@ -1,10 +1,18 @@
 @ECHO OFF
 SETLOCAL
 :: Store start time
-FOR /f "tokens=1-4 delims=:.," %%T IN ("%TIME%") DO (
-SET StartTIME=%TIME%
-SET /a Start100S=%%T*360000+%%U*6000+%%V*100+%%W
-)
+echo %TIME%
+set HH=%TIME:~0,2%
+set MM=%TIME:~3,-6%
+set SS=%TIME:~6,-3%
+set MS=%TIME:~9%
+
+IF "%HH:~0,1%"=="0" SET HH=%HH:~1%
+IF "%MM:~0,1%"=="0" SET MM=%MM:~1%
+IF "%SS:~0,1%"=="0" SET SS=%SS:~1%
+IF "%MS:~0,1%"=="0" SET MS=%MS:~1%
+
+SET /A Start100S=%HH%*360000+%MM%*6000+%SS%*100+%MS%
 
 :: Main Batch code goes here
 :: First, let's check if domain name have been set as param while executing script
@@ -14,15 +22,21 @@ FOR /F "tokens=2 delims=:" %%J IN ('NSLOOKUP %%I set-your-dns-server-ip ^| FIND 
 )
 IF NOT DEFINED IP @ECHO CRITICAL - %1 is invalid or NETWORK error occurred.
 IF NOT DEFINED IP GOTO :cri
-ECHO.
 IF NOT DEFINED DNS @ECHO CRITICAL - %1 - invalid DNS name or DNS error occurred. && GOTO :cri
 IF NOT DEFINED DNS GOTO :cri
 
 :: Retrieve Stop time
-FOR /f "tokens=1-4 delims=:.," %%T IN ("%TIME%") DO (
-SET StopTIME=%TIME%
-SET /a Stop100S=%%T*360000+%%U*6000+%%V*100+%%W
-)
+set HH=%TIME:~0,2%
+set MM=%TIME:~3,-6%
+set SS=%TIME:~6,-3%
+set MS=%TIME:~9%
+
+IF "%HH:~0,1%"=="0" SET HH=%HH:~1%
+IF "%MM:~0,1%"=="0" SET MM=%MM:~1%
+IF "%SS:~0,1%"=="0" SET SS=%SS:~1%
+IF "%MS:~0,1%"=="0" SET MS=%MS:~1%
+
+SET /a Stop100S=%HH%*360000+%MM%*6000+%SS%*100+%MS%
 
 :: Test midnight rollover. If so, add 1 day=8640000 1/100ths secs
 IF %Stop100S% LSS %Start100S% SET /a Stop100S+=8640000
